@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ASCII"?><project>
+	<version>1.0</version>
+	<configs>
+		<config default="true" name="Toronto-exe" category="opl">
+			<ref name="Toronto.dat" type="data">
+			</ref>
+			<ref name="PMFP-LS.mod" type="model">
+			</ref>
+		</config>
+		<config default="false" name="Toronto-L" category="opl">
+			<ref name="PMFP-L.mod" type="model">
+			</ref>
+			<ref name="Toronto.dat" type="data">
+			</ref>
+		</config>
+		<config default="false" name="test" category="opl">
+			<ref name="test.dat" type="data">
+			</ref>
+			<ref name="PMFP-L.mod" type="model">
+			</ref>
+		</config>
+		<config default="false" name="test-LS" category="opl">
+			<ref name="PMFP-LS.mod" type="model">
+			</ref>
+			<ref name="test.dat" type="data">
+			</ref>
+		</config>
+	</configs>
+	
+</project>
