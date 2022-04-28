@@ -14,7 +14,7 @@ int R=10000;
  int NbF=...;
  int NbL=...;
  float B=...;
- float b=0.25*B;
+ float b=0.3*B;
  
  range Clients=1..NbC;
  range Facilities=1..NbF;

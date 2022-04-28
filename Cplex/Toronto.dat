@@ -16,7 +16,9 @@ h from SheetRead(sheet,"Demandes");
 p from SheetRead(sheet, "Penalites");
 d from SheetRead(sheet,"Distance_eucl");
 c from SheetRead(sheet, "Cost");
-q from SheetRead(sheet, "probaL");
+q from SheetRead(sheet, "probaCOCA");
+/*positions from SheetRead(sheet,"position");*/
+/*Cap from SheetRead(sheet,"capacité");*/
 
 K=[{1,2,7,9,3,8,10,4,11,12,13,14,5,15,16,6,18,17,19},
 {1,2,7,9,8,10,3,11,12,4,13,14,5,15,16,6,18,17,19},
