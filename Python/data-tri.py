@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import csv 
 import codecs
-filename="C:/Users/baret/Documents/Resilience SC/data/Toronto/Distance2-euc.csv"
+filename="C:/Users/baret/Documents/Resilience SC/data/USA/test.csv"
 
 #test=np.genfromtxt(filename, dtype=[('mystring','S17')],delimiter=';', usecols=[0]).astype('str')
 #data=np.loadtxt(filename,delimiter='\t',usecols=range(1,20))
@@ -27,7 +27,7 @@ def remove_char(path, name):
     g.close()
     
 def write_output(data):
-    with open("C:/Users/baret/Documents/Resilience SC/data/Toronto/Distance-euc-restric.txt", "a") as fichier:
+    with open("C:/Users/baret/Documents/Resilience SC/data/USA/test-donnes.txt", "a") as fichier:
         for i in range(0,len(data)):
             fichier.write("{")
             for j in range(0,len(data[i])):
@@ -37,11 +37,25 @@ def write_output(data):
             fichier.write('},\n')
 
 def write_excel(data):
-    with open("C:/Users/baret/Documents/Resilience SC/data/Toronto/Distance-tri.csv", "w") as fichier:
+    with open("C:/Users/baret/Documents/Resilience SC/data/USA/test-tri.csv", "w") as fichier:
         writer=csv.writer(fichier)
         writer.writerows(data)
 
-    
+def calcul_position(DataIndex):
+    nbClient=len(DataIndex)
+    position=[]
+    for i in range(0,nbClient):
+        position.append([])
+        for k in range(1,len(DataIndex[i])+1):
+            
+            lst = np.array(DataIndex[i])
+            I=np.where(lst==k)
+            #print(DataIndex[i])
+            print(I[0])
+            position[i].append(int(I[0])+1)
+    with open("C:/Users/baret/Documents/Resilience SC/data/USA/test-positions.csv", "w") as fichier:
+        writer=csv.writer(fichier)
+        writer.writerows(position)
 new="modif.csv"    
 
 remove_char(filename, new)   
@@ -55,26 +69,28 @@ for i in range(0,nbdata[0]):
     #print(dataTab[i])
     #for j in range(1,dataTab[i].size):
        # dataTab[i][j]=float(dataTab[i][j])
-    Sort=sorted(dataTab[i][1:])
+    Sort=sorted(dataTab[i][0:])
     indice=[]
-    print("len sort: ",len(Sort))
+   # print("len sort: ",len(Sort))
     for j in range(0, len(Sort)):
         I=np.where(dataTab[i]==Sort[j])
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! I: ", I)
-        print(Sort)
-        print(type(I[0]))
-        print(I[0])
+        #print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! I: ", I)
+        #print(Sort)
+        #print(type(I[0]))
+        #print(I[0])
         for k in range(0,len(I[0])):
             #if (dataTab[i][I[0][k]]<=0.03):
-            indice.append(I[0][k])
+            indice.append(I[0][k]+1)
             dataTab[i][I[0][k]]=-100
-            print("data: ", dataTab)
-            print("append :", I[0][k])
-            print("indice : ", indice)
+         #   print("data: ", dataTab)
+         #   print("append :", I[0][k])
+          #  print("indice : ", indice)
     DataIndex.append(indice)
-    print(i)
+   # print(i)
+    
+calcul_position(DataIndex)
+write_output(DataIndex)
 write_excel(DataIndex)
-
 
 """
 new="modif.csv"
