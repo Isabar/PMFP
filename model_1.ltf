@@ -1,0 +1,56 @@
+set default
+set echoin 1
+
+MODEL:
+
+SETS:
+Clients: demand, EC, penality;
+Facilities: Cap;
+Levels;
+SORTED(Clients,Facilities):sort, positions, P, distance;
+LINKS(Facilities, levels): cost, proba,z;
+ENDSETS
+
+DATA:
+Number_clients=@ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','NbClients');
+Number_facilities=@ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','NbFacilities');
+Number_levels=@ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','NbLevels');
+Clients=1..Number_clients;
+Facilities=1..Number_facilities; 
+Levels=1..Number_levels; 
+BUDGET = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Budget');
+demand = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Demandes');
+penalty = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Penalites');
+distance = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Distances');
+cost = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Cost');
+proba = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','ProbaL3');
+sort = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Tri');
+positions = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Positions');
+Cap = @ole('C:/Users/baret/Documents/Simulateur/Instances/Instance_1.xlsx','Capacites');
+
+!Results;
+@text('../Results/instance_1')=@WRITE('Resultats', @NEWLINE(1));
+@text('../Results/instance_1')=@WRITEFOR(LINKS(k,l):'Facilities :', k,', Level : ', l,':', z(k,l),@NEWLINE(1));
+
+ENDDATA
+
+!Objective function;
+[obj] Min=@sum(Clients(i): demand(i)*EC(i));
+
+@for(Clients(i): EC(i)=@sum(SORTED(i,k1):@prod(SORTED(i,k2)|k2 #LT# k1:@sum(Levels(l1): proba(sort(i,k2),l1)*z(sort(i,k2),l1)))* @sum(Levels(l):(1-proba(sort(i,k1),l))*z(sort(i,k1),l))*distance(i,k1)));
+Budget=0.3*BUD;
+@for(Facilities(j):@sum(Levels(l): z(j,l))=1);
+
+! Integrity constraints;
+@for(Facilities(j): @for(Levels(l):@bin(z(j,l))));
+
+! Capacity constraints;
+@for (Clients(i): @for( Facilities(k): P(i,k)=@prod(SORTED(i,k2)|k2 #LT# positions(i,k):@sum(Levels(l):proba(sort(i,k2),l)*z(sort(i,k2),l)))*@sum(Levels(l2):(1-proba(positions(i,k),l2))*z(positions(i,k),l2))));
+@for(Facilities(j):@sum(Clients(i):P(i,j)*demand(i))<= Cap(j));
+
+END
+
+set terseo 1
+go
+nonz volume
+quit
