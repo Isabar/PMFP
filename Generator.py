@@ -11,8 +11,9 @@ import xlsxwriter
 import copy
 from xlsxwriter.utility import xl_range
 
-def Generator(minClients,maxClients,minDemand,maxDemand,penality,minFacilities,maxFacilities, nbLevels, cost, probaInit, typeProba):
-    nbClients= random.randint(minClients,maxClients)
+def Generator(minClients,maxClients,minDemand,maxDemand,penality,minFacilities,maxFacilities, nbLevels, cost, probaInit):
+   # nbClients= random.randint(minClients,maxClients)
+    nbClients=maxClients
     Demand=np.zeros(nbClients)
     Penalities=np.zeros(nbClients)
     positionC=np.zeros((nbClients,2))
@@ -23,7 +24,8 @@ def Generator(minClients,maxClients,minDemand,maxDemand,penality,minFacilities,m
         positionC[i,1]=10*random.random()
 
     # donnees etablissements
-    nbFacilities= random.randint(minFacilities,maxFacilities)
+    #nbFacilities= random.randint(minFacilities,maxFacilities)
+    nbFacilities=maxFacilities
     positionF=np.zeros((nbFacilities,2))
     for k in range(nbFacilities) :
        positionF[k,0]=10*random.random()
@@ -33,7 +35,7 @@ def Generator(minClients,maxClients,minDemand,maxDemand,penality,minFacilities,m
     Distances=calc_distance(nbClients, nbFacilities, positionC, positionF)
     
     # calcul des probabilites 
-    Cost,Proba=calc_proba(nbClients, nbFacilities, nbLevels, cost, probaInit, typeProba)
+    Cost,ProbaL,ProbaCO, ProbaCOCA=calc_proba(nbClients, nbFacilities, nbLevels, cost, probaInit)
     Budget=nbFacilities*(nbLevels-1)*10
 
     # calcul des Ki
@@ -45,10 +47,10 @@ def Generator(minClients,maxClients,minDemand,maxDemand,penality,minFacilities,m
     #calcul capacites et congestion 
     Capacites,Congestion=Calc_Congestion(nbClients,nbFacilities,Demand,Positions)
     
-    return nbClients,nbFacilities,Distances,Penalities,Demand,Budget,Ki,Positions,Capacites,Proba,Cost, positionC, positionF, Congestion 
+    return nbClients,nbFacilities,Distances,Penalities,Demand,Budget,Ki,Positions,Capacites,ProbaL,ProbaCO, ProbaCOCA,Cost, positionC, positionF, Congestion 
 
 
-def excel_write(filename, nbClients,nbFacilities,Budget,demand,penalites,distances,cost,proba,Ki,positions,nbLevels, congestion, capacites, positionC,positionF):
+def excel_write(filename, nbClients,nbFacilities,Budget,demand,penalites,distances,cost,ProbaL,ProbaCO, ProbaCOCA,Ki,positions,nbLevels, congestion, capacites, positionC,positionF):
    
     workbook = xlsxwriter.Workbook(filename)
     worksheetD = workbook.add_worksheet('Donnees')
@@ -90,15 +92,31 @@ def excel_write(filename, nbClients,nbFacilities,Budget,demand,penalites,distanc
     for k in range(nbFacilities):
         for l in range(nbLevels):
             worksheetCo.write(k+1,l+1,cost[k,l])
+    cell_range_cost=xl_range(1,1,nbFacilities,nbLevels)       
+    workbook.define_name('Cout', f'=Proba!{cell_range_cost}')
     
     for k in range(nbFacilities):
         for l in range(nbLevels):
-            worksheetCo.write(k+1,(2*nbLevels)+l,proba[k,l])
-    cell_range_cost=xl_range(1,1,nbFacilities+1,nbLevels+1)
-    cell_range_proba=xl_range(1,8,nbFacilities+1,7+nbLevels+1)
+            worksheetCo.write(k+1,(2*nbLevels)+l,ProbaL[k,l])
 
-    workbook.define_name('Cout', f'=Proba!{cell_range_cost}')
-    workbook.define_name('Proba', f'=Proba!{cell_range_proba}')
+    cell_range_probaL=xl_range(1,(2*nbLevels),nbFacilities,(3*nbLevels)-1)
+    print(cell_range_probaL)
+    workbook.define_name('ProbaL', f'=Proba!{cell_range_probaL}')
+    
+    for k in range(nbFacilities):
+        for l in range(nbLevels):
+            worksheetCo.write(k+1,(3*nbLevels)+l,ProbaCO[k,l])
+
+    cell_range_probaCO=xl_range(1,(3*nbLevels),nbFacilities,(4*nbLevels)-1)
+    workbook.define_name('ProbaCO', f'=Proba!{cell_range_probaCO}')
+    
+    for k in range(nbFacilities):
+        for l in range(nbLevels):
+            worksheetCo.write(k+1,(4*nbLevels)+l,ProbaCOCA[k,l])
+    cell_range_probaCOCA=xl_range(1,(4*nbLevels),nbFacilities,(5*nbLevels)-1)
+    workbook.define_name('ProbaCOCA', f'=Proba!{cell_range_probaCOCA}')
+    
+
      
     worksheetT = workbook.add_worksheet('Tri')
     for i in range(nbClients):
@@ -169,26 +187,24 @@ def calc_positions(nbClients, nbFacilities,Ki):
             Positions[i,k-1]=(int(I[0][0])+1)
     return Positions
     
-def calc_proba(nbClient, nbFacilities,nbLevels, cost,probaInit,typeProba):
-    Proba=np.zeros((nbFacilities, nbLevels))
+def calc_proba(nbClient, nbFacilities,nbLevels, cost,probaInit):
+    ProbaL=np.zeros((nbFacilities, nbLevels))
+    ProbaCO=np.zeros((nbFacilities, nbLevels))
+    ProbaCOCA=np.zeros((nbFacilities, nbLevels))
     Cost=np.zeros((nbFacilities, nbLevels))
     for k in range(nbFacilities) :
         for l in range(nbLevels ): 
             Cost[k,l]=(l)*cost
-            print(l)
+
             if l==0 :
-                Proba[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbLevels)*l
-                print(Proba[k,l])
+                ProbaL[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbLevels)*l
+                ProbaCO[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbLevels)*l
+                ProbaCOCA[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbLevels)*l
             elif l>=1 :
-                if typeProba=='Linear':
-                    Proba[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbLevels)*l
-                    print(Proba[k,l])
-                elif typeProba=='Convex':
-                    Proba[k,l]=probaInit/(2**l)
-                elif  typeProba=='Concave':
-                    Proba[k,l]= probaInit*(((nbLevels-l)/nbLevels)**0.6)
-    print(Proba)
-    return Cost, Proba
+                ProbaL[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbLevels)*l
+                ProbaCO[k,l]=probaInit/(2**l)
+                ProbaCOCA[k,l]= probaInit*(((nbLevels-l)/nbLevels)**0.6)
+    return Cost, ProbaL,ProbaCO,ProbaCOCA
     
 def Calc_Congestion(nbClients,nbFacilities,Demand,Positions):
     
@@ -202,6 +218,9 @@ def Calc_Congestion(nbClients,nbFacilities,Demand,Positions):
             if Positions[i,k]==1:
                 Ca=Ca+Demand[i]
         Congestion[k]=C
-        Cap_init[k]=Ca
+        if Ca >10:
+            Cap_init[k]=Ca
+        else : 
+            Cap_init[k]=10
 
-    return Congestion, Cap_init
+    return Cap_init,Congestion

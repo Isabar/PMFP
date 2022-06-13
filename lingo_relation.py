@@ -1,6 +1,6 @@
 import os
 
-def create_lingo_ltf_file(instance_number,model, relaxed,cap):
+def create_lingo_ltf_file(instance_number,model, relaxed,cap,typeProba):
     
    instance_folder_path = f'\'C:/Users/baret/Documents/Simulateur/Instances/'
    instance = f'Instance{instance_number}.xlsx\''
@@ -24,7 +24,7 @@ def create_lingo_ltf_file(instance_number,model, relaxed,cap):
    
    """
    lin_model.writelines(f'DATA:\n')
-   write_data(instance_folder_path, instance, lin_model,model)
+   write_data(instance_folder_path, instance, lin_model,model,typeProba)
 
    write_results_data(instance_number,lin_model,relaxed,model)
    lin_model.writelines(f'ENDDATA\n\n')
@@ -72,7 +72,7 @@ def write_sets(instance_folder_path, instance,lingo_model):
    lingo_model.writelines(f'ENDSETS\n\n')
    return 
 
-def write_data(instance_folder_path, instance, lingo_model, model):
+def write_data(instance_folder_path, instance, lingo_model, model,typeProba):
  
    lingo_model.writelines(f'Number_clients=@ole({instance_folder_path}{instance},\'NbClients\');\n')
    lingo_model.writelines(f'Number_facilities=@ole({instance_folder_path}{instance},\'NbFacilities\');\n')  
@@ -85,7 +85,14 @@ def write_data(instance_folder_path, instance, lingo_model, model):
    lingo_model.writelines(f'penalty = @ole({instance_folder_path}{instance},\'Penalites\');\n')
    lingo_model.writelines(f'distance = @ole({instance_folder_path}{instance},\'Distances\');\n')
    lingo_model.writelines(f'cost = @ole({instance_folder_path}{instance},\'Cout\');\n')
-   lingo_model.writelines(f'proba = @ole({instance_folder_path}{instance},\'Proba\');\n')
+   
+   if typeProba=='Linear':
+       lingo_model.writelines(f'proba = @ole({instance_folder_path}{instance},\'ProbaL\');\n')
+   elif typeProba=='Convex':
+       lingo_model.writelines(f'proba = @ole({instance_folder_path}{instance},\'ProbaCO\');\n')
+   elif typeProba=='Concave':
+           lingo_model.writelines(f'proba = @ole({instance_folder_path}{instance},\'ProbaCOCA\');\n')
+   
    lingo_model.writelines(f'sort = @ole({instance_folder_path}{instance},\'Tri\');\n')
    lingo_model.writelines(f'positions = @ole({instance_folder_path}{instance},\'Positions\');\n')
  #  if model != 'CMS':

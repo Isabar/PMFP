@@ -20,6 +20,7 @@ W=1000
 H=600
 fenetre =tk.Tk()
 canvas = tk.Canvas(fenetre, width=W, height=H,background='white')
+photo = (Image.open("hopital.png"))
 
 def creation_clients(Do, De, PC,T): 
 
@@ -124,7 +125,7 @@ def get_sol( nbFacilities,fichierSol):
     
 def display_instance(filename):
     [Do,C,P,PC,De,T]=get_data(filename)
-    photo = (Image.open("hopital.png"))
+    
     resized_image= photo.resize((60,50), Image.ANTIALIAS)
     new_image= ImageTk.PhotoImage(resized_image)
     canvas.after(1000,create_facilities,new_image,Do, C, P)
@@ -147,4 +148,7 @@ def display_results(filename, fichierSol):
     canvas.pack()
     fenetre.mainloop()
     
-    
+filename='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/Concave/Instances/Instance1.xlsx'
+fileSol='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/Concave/Resultats/instance_1_C_False.xlsx'
+
+display_results(filename, fileSol)
