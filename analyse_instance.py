@@ -4,10 +4,9 @@ Created on Fri Jun 10 14:12:00 2022
 
 @author: baret
 """
-import  os
-from lingo_relation import *
-from Generator import *
 from agregation_resultats import *
+import numpy as np
+import pandas as pd
 #from interface_animation import *
 import xlsxwriter
 
@@ -94,18 +93,19 @@ def calc_dist_Client1(nbClients,nbFacilities, Tri, PC,PF ):
                 D[i,k]=abs(PC[i,0]-PF[k,0])**2+abs(PC[i,1]-PF[k,1])**2
                 nbC1[k]=nbC1[k]+1
     dist=np.zeros(nbFacilities)
-    print(D)
+   # print(D)
    # print(D.size)
+    print(nbC1)
     for kk in range(nbFacilities):
         if nbC1[kk]>0:
             dist[kk]=(np.sum(D[:,kk]))/(nbC1[kk])
         else :
             dist[kk]=0
-    print(dist)
+  #  print(dist)
     return dist
 
 
-directory='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,3/NR/Cap4'
+directory='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,1/NR/Convex'
 instance_size=30
 for i in range(instance_size):
     analyse(i,directory)

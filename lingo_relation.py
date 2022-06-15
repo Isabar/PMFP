@@ -1,11 +1,11 @@
 import os
 
-def create_lingo_ltf_file(instance_number,model, relaxed,cap,typeProba):
+def create_lingo_ltf_file(directory, instance_number,model, relaxed,cap,typeProba):
     
-   instance_folder_path = f'\'C:/Users/baret/Documents/Simulateur/Instances/'
-   instance = f'Instance{instance_number}.xlsx\''
+   instance_folder_path = directory
+   instance = f'/Instances/Instance{instance_number}.xlsx'
    
-   lin_model = open(f'C:/Users/baret/Documents/Simulateur/Modeles/model_{instance_number}_{model}_{relaxed}.ltf','w')
+   lin_model = open(f'{directory}/Modeles/model_{instance_number}_{model}_{relaxed}.ltf','w')
    lin_model.writelines('set default\nset echoin 1\n\n')
 
    """
@@ -26,7 +26,7 @@ def create_lingo_ltf_file(instance_number,model, relaxed,cap,typeProba):
    lin_model.writelines(f'DATA:\n')
    write_data(instance_folder_path, instance, lin_model,model,typeProba)
 
-   write_results_data(instance_number,lin_model,relaxed,model)
+   write_results_data(instance_folder_path,instance_number,lin_model,relaxed,model)
    lin_model.writelines(f'ENDDATA\n\n')
 
    """
@@ -74,49 +74,49 @@ def write_sets(instance_folder_path, instance,lingo_model):
 
 def write_data(instance_folder_path, instance, lingo_model, model,typeProba):
  
-   lingo_model.writelines(f'Number_clients=@ole({instance_folder_path}{instance},\'NbClients\');\n')
-   lingo_model.writelines(f'Number_facilities=@ole({instance_folder_path}{instance},\'NbFacilities\');\n')  
-   lingo_model.writelines(f'Number_levels=@ole({instance_folder_path}{instance},\'NbLevels\');\n')  
+   lingo_model.writelines(f'Number_clients=@ole(\'{instance_folder_path}{instance}\',\'NbClients\');\n')
+   lingo_model.writelines(f'Number_facilities=@ole(\'{instance_folder_path}{instance}\',\'NbFacilities\');\n')  
+   lingo_model.writelines(f'Number_levels=@ole(\'{instance_folder_path}{instance}\',\'NbLevels\');\n')  
    lingo_model.writelines( f'Clients=1..Number_clients;\n')
    lingo_model.writelines(f'Facilities=1..Number_facilities; \n')
    lingo_model.writelines(f'Levels=1..Number_levels; \n')
-   lingo_model.writelines(f'BUD = @ole({instance_folder_path}{instance},\'Budget\');\n')
-   lingo_model.writelines(f'demand = @ole({instance_folder_path}{instance},\'Demandes\');\n')
-   lingo_model.writelines(f'penalty = @ole({instance_folder_path}{instance},\'Penalites\');\n')
-   lingo_model.writelines(f'distance = @ole({instance_folder_path}{instance},\'Distances\');\n')
-   lingo_model.writelines(f'cost = @ole({instance_folder_path}{instance},\'Cout\');\n')
+   lingo_model.writelines(f'BUD = @ole(\'{instance_folder_path}{instance}\',\'Budget\');\n')
+   lingo_model.writelines(f'demand = @ole(\'{instance_folder_path}{instance}\',\'Demandes\');\n')
+   lingo_model.writelines(f'penalty = @ole(\'{instance_folder_path}{instance}\',\'Penalites\');\n')
+   lingo_model.writelines(f'distance = @ole(\'{instance_folder_path}{instance}\',\'Distances\');\n')
+   lingo_model.writelines(f'cost = @ole(\'{instance_folder_path}{instance}\',\'Cout\');\n')
    
    if typeProba=='Linear':
-       lingo_model.writelines(f'proba = @ole({instance_folder_path}{instance},\'ProbaL\');\n')
+       lingo_model.writelines(f'proba = @ole(\'{instance_folder_path}{instance}\',\'ProbaL\');\n')
    elif typeProba=='Convex':
-       lingo_model.writelines(f'proba = @ole({instance_folder_path}{instance},\'ProbaCO\');\n')
+       lingo_model.writelines(f'proba = @ole(\'{instance_folder_path}{instance}\',\'ProbaCO\');\n')
    elif typeProba=='Concave':
-           lingo_model.writelines(f'proba = @ole({instance_folder_path}{instance},\'ProbaCOCA\');\n')
+           lingo_model.writelines(f'proba = @ole(\'{instance_folder_path}{instance}\',\'ProbaCOCA\');\n')
    
-   lingo_model.writelines(f'sort = @ole({instance_folder_path}{instance},\'Tri\');\n')
-   lingo_model.writelines(f'positions = @ole({instance_folder_path}{instance},\'Positions\');\n')
+   lingo_model.writelines(f'sort = @ole(\'{instance_folder_path}{instance}\',\'Tri\');\n')
+   lingo_model.writelines(f'positions = @ole(\'{instance_folder_path}{instance}\',\'Positions\');\n')
  #  if model != 'CMS':
-   lingo_model.writelines(f'Cap = @ole({instance_folder_path}{instance},\'Capacites\');\n\n')
+   lingo_model.writelines(f'Cap = @ole(\'{instance_folder_path}{instance}\',\'Capacites\');\n\n')
 
    
    return
 
 
-def write_results_data(instance_number,lingo_model,relaxed,model):
+def write_results_data(instance_folder_path,instance_number,lingo_model,relaxed,model):
 
-   results_folder_path = f'\'C:/Users/baret/Documents/Simulateur/Resultats/'
-   results = f'instance_{instance_number}_{model}_{relaxed}.xlsx\''
+   results_folder_path = instance_folder_path+'/Resultats/'
+   results = f'instance_{instance_number}_{model}_{relaxed}.xlsx'
    #results_folder_path = 'test'
    #results = '1'
   
 
    lingo_model.writelines('!Results;\n')
   
-   lingo_model.writelines(f'@ole({results_folder_path}{results},\'B2\')=@WRITE(\'Objectif\');\n')
-   lingo_model.writelines(f'@ole({results_folder_path}{results},\'C2\')=@WRITE(@sum(Clients(i):demand(i)*EC(i)));\n')
-   lingo_model.writelines(f'@ole({results_folder_path}{results},\'B3\')=@WRITEFOR(LINKS(k,l):z(k,l));\n')
-   lingo_model.writelines(f'@ole({results_folder_path}{results},\'D2\')=@WRITE(\' The resolution time is : \',@TIME(),\' seconds\',@NEWLINE(1));\n\n')        
-   lingo_model.writelines(f'@ole({results_folder_path}{results},\'C3\')=@WRITEFOR(Facilities(k):Cap(k));\n')
+   lingo_model.writelines(f'@ole(\'{results_folder_path}{results}\',\'B2\')=@WRITE(\'Objectif\');\n')
+   lingo_model.writelines(f'@ole(\'{results_folder_path}{results}\',\'C2\')=@WRITE(@sum(Clients(i):demand(i)*EC(i)));\n')
+   lingo_model.writelines(f'@ole(\'{results_folder_path}{results}\',\'B3\')=@WRITEFOR(LINKS(k,l):z(k,l));\n')
+   lingo_model.writelines(f'@ole(\'{results_folder_path}{results}\',\'D2\')=@WRITE(\' The resolution time is : \',@TIME(),\' seconds\',@NEWLINE(1));\n\n')        
+   lingo_model.writelines(f'@ole(\'{results_folder_path}{results}\',\'C3\')=@WRITEFOR(Facilities(k):Cap(k));\n')
    return 
 
 def write_the_objective_function_init(lingo_model):

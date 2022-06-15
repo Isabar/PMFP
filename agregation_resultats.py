@@ -198,7 +198,7 @@ def compare_capacity(directory1,directory2,instance_size):
     for i in range(instance_size) :
         fichier= (directory1 + f'/Instances/Instance{i}.xlsx')
         fichierSol1= (directory1 + f'/Resultats/instance_{i}_C_False.xlsx')
-        fichierSol2= (directory2 + f'/Resultats/instance_{i}_C_True.xlsx')
+        fichierSol2= (directory2 + f'/Resultats/instance_{i}_C_False.xlsx')
             #donnees générales 
                 
         Donnees=pd.read_excel(fichier,sheet_name="Donnees", index_col=0 )
@@ -262,6 +262,87 @@ def compare_capacity(directory1,directory2,instance_size):
         worksheet.write(i+1,7,DiffScore)
     workbook.close()
         
+def compare_relaxed(directory1,directory2,instance_size):
+    file_result=directory2+'/Resultats-relaxed.xlsx'
+    workbook = xlsxwriter.Workbook(file_result)
+    worksheet = workbook.add_worksheet('Result')
+        
+    worksheet.write('A1','Instance')
+    worksheet.write('B1','nbClients')
+    worksheet.write('C1','nbFacilities')
+    worksheet.write('D1','Coefficient de congestion')
+    worksheet.write('E1','Resolution Time 1')
+    worksheet.write('F1','Resolution Time 2')
+    worksheet.write('G1',' Nb Var Diff')
+    worksheet.write('H1','Diff Obj')
+        
+    for i in range(instance_size) :
+        fichier= (directory1 + f'/Instances/Instance{i}.xlsx')
+        fichierSol1= (directory1 + f'/Resultats/instance_{i}_C_False.xlsx')
+        fichierSol2= (directory2 + f'/Resultats/instance_{i}_C_True.xlsx')
+            #donnees générales 
+                
+        Donnees=pd.read_excel(fichier,sheet_name="Donnees", index_col=0 )
+        Congestion=pd.read_excel(fichier,sheet_name="Congestions", index_col=0 )       
+            #données facilities 
+     #       Capacites=pd.read_excel(fichier,sheet_name="Congestions", index_col=0 )
+                    
+        Do=Donnees.to_numpy()
+        C=Congestion.to_numpy()
+             
+        nbClients=Do[0]
+        nbFacilities=Do[1]
+        worksheet.write(i+1,0,i)
+        worksheet.write(i+1,1,nbClients)
+        worksheet.write(i+1,2,nbFacilities)
+            
+             # données solutions   
+        Resolution_timeNR=pd.read_excel(fichierSol1,sheet_name="Sheet1", index_col=0)
+        RTNR=Resolution_timeNR.to_numpy()
+
+        R=RTNR.size
+        if R>0:
+           ResT=RTNR[0,3]
+           worksheet.write(i+1,4,ResT)
+           ResNR=RTNR[1:,0]
+           print(ResNR)
+        else :
+            ResNR=np.empty(shape=1)
+        
+        Resolution_timeR=pd.read_excel(fichierSol2,sheet_name="Sheet1", index_col=0)
+        RTR=Resolution_timeR.to_numpy()
+
+        RR=RTR.size
+        if RR>0:
+            ResT=RTR[0,3]
+            worksheet.write(i+1,5,ResT)
+            ResR=RTR[1:,0]
+            print(ResR)
+        else :
+            ResR=np.empty(shape=1)
+        nbVArDiff=0
+        print(ResR.size)
+        print(ResNR.size)
+           
+        for j in range(min(ResNR.size,ResR.size)):
+            if ResNR[j] != ResR[j]:
+                nbVArDiff=nbVArDiff+1
+            
+        DiffScore=0
+        if R>0 & RR>0:
+            DiffScore=RTR[0,1]-RTNR[0,1]
+                
+          #  C2=np.resize(C,(1,nbClients))
+        ET=np.std(C)
+
+        M=np.mean(C)
+
+        CO=ET/M
+        worksheet.write(i+1,3,CO)
+        worksheet.write(i+1,6,nbVArDiff)
+        worksheet.write(i+1,7,DiffScore)
+    workbook.close()
+
 def get_sol( nbFacilities,fichierSol):
     # données solutions   
     Solutions=pd.read_excel(fichierSol,sheet_name="Sheet1", index_col=0)
@@ -285,8 +366,9 @@ def calcul_distance(nb, position):
     return dist
 
     
-directory1='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,3/NR/Non-Capacitated'     
-directory2='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,3/NR/Cap10'     
-model='Normal'  
+directory1='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-240-0,1'     
+directory2='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/Relaxé'     
+model='C'  
 RT=aggr_result(directory1, 30,model)
 #compare_capacity(directory1,directory2 ,30)
+#compare_relaxed(directory1, directory2, 30)

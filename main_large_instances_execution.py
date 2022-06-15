@@ -18,37 +18,34 @@ def crea_instance(instance_size,minClients,maxClients,minDemand,maxDemand,penali
 
  
 
-def resolution(instance_size,model,relaxed,cap,typeProba):
+def resolution(instance_debut,instance_fin, directory, model,relaxed,cap,typeProba):
     #3
-    instances = [(i) for i in range(instance_size)]
+    instances = [(i) for i in range(instance_debut,instance_fin)]
 
     for instance in instances:
-        create_lingo_ltf_file(instance,model,relaxed,cap,typeProba)
+        create_lingo_ltf_file(directory,instance,model,relaxed,cap,typeProba)
         print('running instance '+str(instance) )
-        fileSol= 'C:/Users/baret/Documents/Simulateur/Resultats/instance_'+str(instance)+'_'+str(model)+'_'+str(relaxed)+'.xlsx'
-        print(fileSol)
+        fileSol= directory+'/Resultats/instance_'+str(instance)+'_'+str(model)+'_'+str(relaxed)+'.xlsx'
+       # print(fileSol)
         workbook = xlsxwriter.Workbook(fileSol)
 
         workbook.close()
-        os.system(f'runlingo C:/Users/baret/Documents/Simulateur/Modeles/model_{instance}_{model}_{relaxed}.ltf')
+        filemodel=directory+'/Modeles/model_'+str(instance)+'_'+str(model)+'_'+str(relaxed)+'.ltf'
+       # print(filemodel)
+        os.system(f'runlingo {filemodel}')
 
     return 
 
-"""
-def analyse_result(instance_size):
-    directory='C:/Users/baret/Documents/Simulateur/'       
-    RT=aggr_result(directory, 30)
-    compare_result(directory, 30)
-
- """   
+   
 instance_size=30
-#crea_instance(instance_size, 50, 120, 10, 12, 10, 5, 12, 4, 10, 0.1)
+#crea_instance(instance_size, 50, 240, 10, 12, 10, 5, 24, 4, 10, 0.3)
 print('test')
 relaxed =False
 model='C' # C ou CMS ou CML 
 cap=4
-resolution(instance_size,model,False, cap,'Linear')
+directory='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-240-0,1'
+resolution(7,8,directory,model,False, cap,'Linear')
 #resolution(instance_size,model,True, cap,'Linear')
 model2='Normal'
-#resolution(instance_size, model2, False,cap,'Linear')
+#resolution(0,30, model2, False,cap,'Linear')
 
