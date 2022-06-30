@@ -143,7 +143,7 @@ def compare_result(directory,instance_size):
             ResT=RTNR[0,3]
             worksheet.write(i+1,4,ResT)
             ResNR=RTNR[1:,0]
-            print(ResNR)
+           # print(ResNR)
         else :
             ResNR=np.empty(shape=1)
         Resolution_timeR=pd.read_excel(fichierSolR,sheet_name="Sheet1", index_col=0)
@@ -154,12 +154,12 @@ def compare_result(directory,instance_size):
             ResT=RTR[0,3]
             worksheet.write(i+1,5,ResT)
             ResR=RTR[1:,0]
-            print(ResR)
+           # print(ResR)
         else :
             ResR=np.empty(shape=1)
         nbVArDiff=0
-        print(ResR.size)
-        print(ResNR.size)
+       # print(ResR.size)
+       # print(ResNR.size)
        
         for j in range(min(ResNR.size,ResR.size)):
             if ResNR[j] != ResR[j]:
@@ -216,41 +216,49 @@ def compare_capacity(directory1,directory2,instance_size):
         worksheet.write(i+1,2,nbFacilities)
             
              # données solutions   
-        Resolution_timeNR=pd.read_excel(fichierSol1,sheet_name="Sheet1", index_col=0)
-        RTNR=Resolution_timeNR.to_numpy()
+        Resolution_time1=pd.read_excel(fichierSol1,sheet_name="Sheet1", index_col=0)
+        RT1=Resolution_time1.to_numpy()
 
-        R=RTNR.size
+        R=RT1.size
         if R>0:
-           ResT=RTNR[0,3]
+           ResT=RT1[0,3]
            worksheet.write(i+1,4,ResT)
-           ResNR=RTNR[1:,0]
-           print(ResNR)
+           Res1=RT1[1:,0]
+           #print(Res1)
         else :
-            ResNR=np.empty(shape=1)
+            Res1=np.empty(shape=1)
         
-        Resolution_timeR=pd.read_excel(fichierSol2,sheet_name="Sheet1", index_col=0)
-        RTR=Resolution_timeR.to_numpy()
+        Resolution_time2=pd.read_excel(fichierSol2,sheet_name="Sheet1", index_col=0)
+        RT2=Resolution_time2.to_numpy()
 
-        RR=RTR.size
+        RR=RT2.size
         if RR>0:
-            ResT=RTR[0,3]
+            ResT=RT2[0,3]
             worksheet.write(i+1,5,ResT)
-            ResR=RTR[1:,0]
-            print(ResR)
+            Res2=RT2[1:,0]
+            #print(Res2)
         else :
-            ResR=np.empty(shape=1)
+            Res2=np.empty(shape=1)
         nbVArDiff=0
-        print(ResR.size)
-        print(ResNR.size)
+       # print(Res2.size)
+       # print(Res1.size)
            
-        for j in range(min(ResNR.size,ResR.size)):
-            if ResNR[j] != ResR[j]:
+        for j in range(min(Res1.size,Res2.size)):
+            if Res1[j] != Res2[j]:
                 nbVArDiff=nbVArDiff+1
             
         DiffScore=0
-        if R>0 & RR>0:
-            DiffScore=RTR[0,1]-RTNR[0,1]
-                
+########pb de taille quand pas résolu !!!!!!!!!!!!!!!!!!
+        print(i)
+        if RT1.size>0 :
+            if RT2.size>0 :
+                print('rentre')
+                if RT1[0,1]>0:
+                    DiffScore=(RT1[0,1]-RT2[0,1])/RT1[0,1]
+        if DiffScore>0:
+           print('positif')
+        else :
+            DiffScore=0
           #  C2=np.resize(C,(1,nbClients))
         ET=np.std(C)
 
@@ -258,8 +266,12 @@ def compare_capacity(directory1,directory2,instance_size):
 
         CO=ET/M
         worksheet.write(i+1,3,CO)
+        print( 'CO')
         worksheet.write(i+1,6,nbVArDiff)
+        print('nbVar diff')
+        print(DiffScore)
         worksheet.write(i+1,7,DiffScore)
+        print('Diff score')
     workbook.close()
         
 def compare_relaxed(directory1,directory2,instance_size):
@@ -305,7 +317,7 @@ def compare_relaxed(directory1,directory2,instance_size):
            ResT=RTNR[0,3]
            worksheet.write(i+1,4,ResT)
            ResNR=RTNR[1:,0]
-           print(ResNR)
+        #   print(ResNR)
         else :
             ResNR=np.empty(shape=1)
         
@@ -317,12 +329,12 @@ def compare_relaxed(directory1,directory2,instance_size):
             ResT=RTR[0,3]
             worksheet.write(i+1,5,ResT)
             ResR=RTR[1:,0]
-            print(ResR)
+         #   print(ResR)
         else :
             ResR=np.empty(shape=1)
         nbVArDiff=0
-        print(ResR.size)
-        print(ResNR.size)
+      #  print(ResR.size)
+       # print(ResNR.size)
            
         for j in range(min(ResNR.size,ResR.size)):
             if ResNR[j] != ResR[j]:
@@ -331,6 +343,7 @@ def compare_relaxed(directory1,directory2,instance_size):
         DiffScore=0
         if R>0 & RR>0:
             DiffScore=RTR[0,1]-RTNR[0,1]
+            print('rentrer')
                 
           #  C2=np.resize(C,(1,nbClients))
         ET=np.std(C)
@@ -366,9 +379,9 @@ def calcul_distance(nb, position):
     return dist
 
     
-directory1='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-240-0,1'     
-directory2='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/Relaxé'     
+directory1='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/NR/Budget/Budget-0,2'     
+directory2='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/NR/Budget/Budget-0,7'     
 model='C'  
-RT=aggr_result(directory1, 30,model)
+RT=aggr_result(directory1, 24,model)
 #compare_capacity(directory1,directory2 ,30)
 #compare_relaxed(directory1, directory2, 30)

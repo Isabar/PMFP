@@ -17,7 +17,7 @@ def analyse(i,directory):
     
     fileSol=directory+'/Resultats/instance_'+str(i)+'_C_False.xlsx'
    
-    fileAnalyse = directory+'/Analyse/Analyse'+str(i)+'.xlsx'
+    fileAnalyse = directory+'/Analyses/Analyse'+str(i)+'.xlsx'
     workAnalyse=xlsxwriter.Workbook(fileAnalyse)
     worksheet = workAnalyse.add_worksheet('Result')
     worksheet.write('A1','Etablissements')
@@ -27,6 +27,7 @@ def analyse(i,directory):
     worksheet.write('E1','Distance clients 1')
     worksheet.write('F1','Distance établissements')
     worksheet.write('G1','Niveau de fortication')
+    worksheet.write('H1','Ecart capacité')
     
     Do= pd.read_excel(filename,sheet_name="Donnees", index_col=0 )
     Donnees=Do.to_numpy()
@@ -49,15 +50,16 @@ def analyse(i,directory):
     DistC1=calc_dist_Client1(nbC,nbF, Tri, PositionsC,PositionsF)
     DistF=cal_dist(nbF, nbF, PositionsF, PositionsF)
     Sol=get_sol(nbFacilities,fileSol)
-
+ #   print(Sol)
     Dist=cal_dist(nbC,nbF,PositionsC,PositionsF)
-    
+    Cmin=get_cap_min(nbF, fileSol)
+    print(Cmin)
     for k in range (nbF):
         ligne=k+1
         worksheet.write(ligne,0,k)
         worksheet.write(ligne,1,Congestions[k])
         worksheet.write(ligne,2, Dist[k])
-        worksheet.write(ligne,3, Capacites[k])
+        worksheet.write(ligne,3, 4*Capacites[k])
         #print('Dist')
         #print(k)
         #print(DistC1)
@@ -66,6 +68,11 @@ def analyse(i,directory):
         for l in range(nbL):
             if Sol[k,l]==1:
                 worksheet.write(ligne,6,l)
+        if Capacites[k]> 0:        
+            Ecap=(((4*Capacites[k])-Cmin[k])/(4*Capacites[k]))*100
+        else :
+            Ecap=Cmin[k]
+        worksheet.write(ligne,7,Ecap)
     workAnalyse.close()
     return 
 
@@ -95,7 +102,7 @@ def calc_dist_Client1(nbClients,nbFacilities, Tri, PC,PF ):
     dist=np.zeros(nbFacilities)
    # print(D)
    # print(D.size)
-    print(nbC1)
+   # print(nbC1)
     for kk in range(nbFacilities):
         if nbC1[kk]>0:
             dist[kk]=(np.sum(D[:,kk]))/(nbC1[kk])
@@ -104,9 +111,20 @@ def calc_dist_Client1(nbClients,nbFacilities, Tri, PC,PF ):
   #  print(dist)
     return dist
 
-
-directory='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,1/NR/Convex'
-instance_size=30
-for i in range(instance_size):
-    analyse(i,directory)
+def get_cap_min(nbf, fileSol):
+    Solutions=pd.read_excel(fileSol,sheet_name="Sheet1", index_col=0)
+    S=Solutions.to_numpy()
+    Cmin=np.zeros(nbf)
+   # print(S)
+    for j in range(nbf):
+        Cmin[j]=S[j+1,2]
+    
+    print(Cmin)
+    return Cmin 
+    
+directory='C:/Users/baret/Documents/Simulateur/Test-capacité/120-12'    
+#directory='C:/Users/baret/Documents/Simulateur/Test-capacité'
+#instance_size=9
+#for i in range(instance_size):
+analyse(8,directory)
     

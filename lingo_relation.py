@@ -1,6 +1,6 @@
 import os
 
-def create_lingo_ltf_file(directory, instance_number,model, relaxed,cap,typeProba):
+def create_lingo_ltf_file(directory, instance_number,model, relaxed,cap,typeProba, budg):
     
    instance_folder_path = directory
    instance = f'/Instances/Instance{instance_number}.xlsx'
@@ -35,7 +35,7 @@ def create_lingo_ltf_file(directory, instance_number,model, relaxed,cap,typeProb
 
    write_the_objective_function_init(lin_model)
 
-   write_constraints_init(lin_model)
+   write_constraints_init(lin_model, budg)
 
    write_integrity_constraints(lin_model,relaxed)
    
@@ -50,6 +50,7 @@ def create_lingo_ltf_file(directory, instance_number,model, relaxed,cap,typeProb
    """
 
    lin_model.writelines(f'set terseo 1\n')
+  # lin_model.writelines(f'set timlim 120\n')
    lin_model.writelines(f'go\n')
    lin_model.writelines(f'nonz volume\n')
    lin_model.writelines(f'quit\n')
@@ -59,12 +60,130 @@ def create_lingo_ltf_file(directory, instance_number,model, relaxed,cap,typeProb
    return 
 
 
+def create_cap_file(directory, instance_number,model, relaxed,cap,typeProba, budg):
+    instance_folder_path = directory
+    instance = f'/Instances/Instance{instance_number}.xlsx'
+    
+    lin_model = open(f'{directory}/Modeles/model_{instance_number}_{model}_{relaxed}.ltf','w')
+    lin_model.writelines('set default\nset echoin 1\n\n')
+
+    """
+       # First data section
+    """
+
+    lin_model.writelines('MODEL:\n\n')
+      
+    """
+       # Sets section
+    """
+    write_sets(instance_folder_path,instance,lin_model )
+
+    """
+       # Data section
+    
+    """
+    lin_model.writelines(f'DATA:\n')
+    write_data(instance_folder_path, instance, lin_model,model,typeProba)
+
+    write_results_data(instance_folder_path,instance_number,lin_model,relaxed,model)
+    write_result_cap(instance_folder_path,instance_number,lin_model,relaxed,model)
+    lin_model.writelines(f'ENDDATA\n\n')
+
+    """
+       # Objective function 
+    """
+
+    write_the_objective_function_init(lin_model)
+
+    write_constraints_init(lin_model,budg)
+
+    write_integrity_constraints(lin_model,relaxed)
+    
+    if model=='C' or model=='CMS':
+        write_capacity_constraints(lin_model,cap)
+        write_capacite_min(lin_model)
+     
+    lin_model.writelines(f'END\n\n')
+
+    """
+      # Add command for runlingo
+    """
+
+    lin_model.writelines(f'set terseo 1\n')
+   # lin_model.writelines(f'set timlim 120\n')
+    lin_model.writelines(f'go\n')
+    lin_model.writelines(f'nonz volume\n')
+    lin_model.writelines(f'quit\n')
+    
+    lin_model.close()
+
+    return 
+
+
+def create_bi_file(directory, instance_number,model, relaxed,cap,typeProba,obj, budg):
+    instance_folder_path = directory
+    instance = f'/Instances/Instance{instance_number}.xlsx'
+    
+    lin_model = open(f'{directory}/Modeles/model_{instance_number}_{model}_{relaxed}.ltf','w')
+    lin_model.writelines('set default\nset echoin 1\n\n')
+
+    """
+       # First data section
+    """
+
+    lin_model.writelines('MODEL:\n\n')
+      
+    """
+       # Sets section
+    """
+    write_sets(instance_folder_path,instance,lin_model )
+
+    """
+       # Data section
+    
+    """
+    lin_model.writelines(f'DATA:\n')
+    write_data(instance_folder_path, instance, lin_model,model,typeProba)
+
+    write_results_data(instance_folder_path,instance_number,lin_model,relaxed,model)
+    write_result_cap(instance_folder_path,instance_number,lin_model,relaxed,model)
+    lin_model.writelines(f'ENDDATA\n\n')
+
+    """
+       # Objective function 
+    """
+
+    write_bi_obj(lin_model,obj)
+
+    write_constraints_init(lin_model, budg)
+
+    write_integrity_constraints(lin_model,relaxed)
+    
+    if model=='C' or model=='CMS':
+        write_capacity_constraints(lin_model,cap)
+     
+    lin_model.writelines(f'END\n\n')
+
+    """
+      # Add command for runlingo
+    """
+
+    lin_model.writelines(f'set terseo 1\n')
+   # lin_model.writelines(f'set timlim 120\n')
+    lin_model.writelines(f'go\n')
+    lin_model.writelines(f'nonz volume\n')
+    lin_model.writelines(f'quit\n')
+    
+    lin_model.close()
+
+    return 
+
 def write_sets(instance_folder_path, instance,lingo_model):
 
    lingo_model.writelines(f'SETS:\n')
 
    lingo_model.writelines(f'Clients: demand, EC, penalty;\n')
-   lingo_model.writelines(f'Facilities: Cap, perte;\n')
+   lingo_model.writelines(f'Facilities: Cap, perte, Cmin;\n')
    lingo_model.writelines(f'Levels;\n')
    lingo_model.writelines(f'SORTED(Clients,Facilities):sort, positions, P, distance;\n')
    lingo_model.writelines(f'LINKS(Facilities, levels): cost, proba,z;\n')
@@ -119,6 +238,19 @@ def write_results_data(instance_folder_path,instance_number,lingo_model,relaxed,
    lingo_model.writelines(f'@ole(\'{results_folder_path}{results}\',\'C3\')=@WRITEFOR(Facilities(k):Cap(k));\n')
    return 
 
+
+def write_result_cap(instance_folder_path,instance_number,lingo_model,relaxed,model):
+    results_folder_path = instance_folder_path+'/Resultats/'
+    results = f'instance_{instance_number}_{model}_{relaxed}.xlsx'
+    
+    lingo_model.writelines(f'@ole(\'{results_folder_path}{results}\',\'D3\')=@WRITEFOR(Facilities(k):Cmin(k));\n')
+    
+    return 
+
+def write_bi_obj( lingo_model, obj):
+    lingo_model.writelines(f'!Objective function;\n')
+    lingo_model.writelines(f'[obj] Min=H1')
+    
 def write_the_objective_function_init(lingo_model):
 
    lingo_model.writelines(f'!Objective function;\n')
@@ -140,11 +272,11 @@ def write_the_objective_function_CML(lingo_model):
    
    return 
 
-def write_constraints_init(lingo_model):
+def write_constraints_init(lingo_model, budg):
        
-
+   lingo_model.writelines(f'BUDGET={budg}*BUD;\n')
    lingo_model.writelines(f'@for(Clients(i): EC(i)=@sum(SORTED(i,k1):@prod(SORTED(i,k2)|k2 #LT# k1:@sum(Levels(l1): proba(sort(i,k2),l1)*z(sort(i,k2),l1)))* @sum(Levels(l):(1-proba(sort(i,k1),l))*z(sort(i,k1),l))*distance(i,k1))+@prod(SORTED(i,k3):@sum(Levels(l2):proba(sort(i,k3),l2)*z(sort(i,k3),l2)))*penalty(i));\n') 
-   lingo_model.writelines(f'@sum(LINKS(j,l): cost(j,l)*z(j,l))<=BUD;\n')
+   lingo_model.writelines(f'@sum(LINKS(j,l): cost(j,l)*z(j,l))<=BUDGET;\n')
 
    lingo_model.writelines(f'@for(Facilities(j):@sum(Levels(l): z(j,l))=1);\n\n')
 
@@ -168,6 +300,12 @@ def write_capacity_constraints(lingo_model,cap):
    lingo_model.writelines(f'@for(Facilities(j):@sum(Clients(i):P(i,j)*demand(i))<= {cap}*Cap(j));\n\n')
    
    return 
+
+
+def write_capacite_min(lingo_model):
+    lingo_model.writelines(f'@for(Facilities(j):Cmin(j)=@sum(Clients(i):P(i,j)*demand(i)));\n')
+    
+    return 
 
 def write_capacity_lost_constraints(lingo_model):
        

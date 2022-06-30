@@ -15,6 +15,7 @@ import tkinter as tk
 from PIL import ImageTk, Image
 import pandas as pd 
 import numpy as np 
+from analyse_instance import *
 
 W=1000
 H=600
@@ -87,6 +88,27 @@ def display_congestion(Do,P,C,NS):
             canvas.create_oval((((W*P[k,0])/10)+10*Ratio[0],((H*P[k,1])/10)+10*Ratio[0]),(((W*P[k,0])/10)-10*Ratio[0],((H*P[k,1])/10)-10*Ratio[0]), width=Ratio[0], fill="red")
  
 
+def display_capacity(Do,P,Cmin, C, NS ):
+    nbFacilities=Do[1]
+    nbF=int(nbFacilities)
+    
+    for k in range(nbF):
+
+        Ratio=Cmin[k]/(C[k]*4)
+        print(Ratio)
+        if NS[k,0]==1:
+            print("create l1")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="green")
+        elif NS[k,1]==1:
+            print("create l2")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="blue")
+        elif NS[k,2]==1:
+            print("create l3")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="purple")
+        elif NS[k,3]==1:
+            print("create l4")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="red")
+ 
 
 def get_data(fichier):
 #donnees générales 
@@ -95,10 +117,11 @@ def get_data(fichier):
        
 #données facilities 
     Positions=pd.read_excel(fichier,sheet_name="Position-facilities", index_col=0)
-    Capacites=pd.read_excel(fichier,sheet_name="Congestions", index_col=0 )
-        
+    Congestion=pd.read_excel(fichier,sheet_name="Capacites", index_col=0 )
+    
+    
     Do=Donnees.to_numpy()
-    C=Capacites.to_numpy()
+    C=Congestion.to_numpy()
     P=Positions.to_numpy()
        
 #données clients 
@@ -138,6 +161,7 @@ def display_instance(filename):
 def display_results(filename, fichierSol):
     [Do,C,P,PC,De,T]=get_data(filename)
     NS=get_sol(Do[1], fichierSol)
+    Cmin=get_cap_min(12, fichierSol)
     photo = (Image.open("hopital.png"))
     resized_image= photo.resize((60,50), Image.ANTIALIAS)
     new_image= ImageTk.PhotoImage(resized_image)
@@ -145,10 +169,11 @@ def display_results(filename, fichierSol):
     canvas.after(2000,creation_clients,Do, De, PC, T)
     canvas.after(3000,display_line,Do, PC, P, T)
     canvas.after(4000,display_congestion,Do, P, C, NS)
+   # canvas.after(4000, display_capacity, Do, P, Cmin, C, NS)
     canvas.pack()
     fenetre.mainloop()
     
-filename='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/Concave/Instances/Instance1.xlsx'
-fileSol='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/Concave/Resultats/instance_1_C_False.xlsx'
+filename='C:/Users/baret/Documents/Simulateur/Test-capacité/120-12/Instances/Instance8.xlsx'
+fileSol='C:/Users/baret/Documents/Simulateur/Test-capacité/120-12/Resultats/instance_8_C_False.xlsx'
 
 display_results(filename, fileSol)

@@ -61,9 +61,9 @@ def excel_write(filename, nbClients,nbFacilities,Budget,demand,penalites,distanc
     worksheetD.write('B2', nbClients)
     worksheetD.write('B3', nbFacilities)
 
-    B=0.3*Budget
+#    B=0.3*Budget
 
-    worksheetD.write('B4', B)
+    worksheetD.write('B4', Budget)
     worksheetD.write('B5', nbLevels)
     
     workbook.define_name('NbClients', '=Donnees!$B$2')
