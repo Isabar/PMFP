@@ -112,7 +112,7 @@ def calc_dist_Client1(nbClients,nbFacilities, Tri, PC,PF ):
     return dist
 
 def get_cap_min(nbf, fileSol):
-    Solutions=pd.read_excel(fileSol,sheet_name="Sheet1", index_col=0)
+    Solutions=pd.read_excel(fileSol,sheet_name="Feuil1", index_col=0)
     S=Solutions.to_numpy()
     Cmin=np.zeros(nbf)
    # print(S)
@@ -122,9 +122,9 @@ def get_cap_min(nbf, fileSol):
     print(Cmin)
     return Cmin 
     
-directory='C:/Users/baret/Documents/Simulateur/Test-capacité/120-12'    
+#directory='C:/Users/baret/Documents/Simulateur/Test-capacité/120-12'    
 #directory='C:/Users/baret/Documents/Simulateur/Test-capacité'
 #instance_size=9
 #for i in range(instance_size):
-analyse(8,directory)
+#analyse(8,directory)
     

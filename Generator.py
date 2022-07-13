@@ -157,6 +157,52 @@ def excel_write(filename, nbClients,nbFacilities,Budget,demand,penalites,distanc
    
     return 
 
+def write_proba(nbC,nbF,nbL,probaInit, filename):
+    ProbaL=np.zeros((nbF, nbL))
+    ProbaCO=np.zeros((nbF, nbL))
+    ProbaCOCA=np.zeros((nbF, nbL))
+    for k in range(nbF) :
+        for l in range(nbL ): 
+
+
+            if l==0 :
+                ProbaL[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbL)*l
+                ProbaCO[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbL)*l
+                ProbaCOCA[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbL)*l
+            elif l>=1 :
+                ProbaL[k,l]=probaInit-((probaInit-(0.5*probaInit)/2**l)/nbL)*l
+                ProbaCO[k,l]=probaInit/(2**l)
+                ProbaCOCA[k,l]= probaInit*(((nbL-l)/nbL)**0.6)   
+   
+    workbook = xlsxwriter.Workbook(filename)
+    worksheetCo = workbook.add_worksheet('Probabilite')
+        
+    for k in range(nbF):
+        for l in range(nbL):
+            worksheetCo.write(k+1,(2*nbL)+l,ProbaL[k,l])
+
+    cell_range_probaL=xl_range(1,(2*nbL),nbF,(3*nbL)-1)
+    print(cell_range_probaL)
+    workbook.define_name('ProbaL', f'=Proba!{cell_range_probaL}')
+        
+    for k in range(nbF):
+        for l in range(nbL):
+            worksheetCo.write(k+1,(3*nbL)+l,ProbaCO[k,l])
+
+    cell_range_probaCO=xl_range(1,(3*nbL),nbF,(4*nbL)-1)
+    workbook.define_name('ProbaCO', f'=Proba!{cell_range_probaCO}')
+        
+    for k in range(nbF):
+        for l in range(nbL):
+            worksheetCo.write(k+1,(4*nbL)+l,ProbaCOCA[k,l])
+    cell_range_probaCOCA=xl_range(1,(4*nbL),nbF,(5*nbL)-1)
+    workbook.define_name('ProbaCOCA', f'=Proba!{cell_range_probaCOCA}')
+        
+    workbook.close()
+    
+    return  ProbaL,ProbaCO,ProbaCOCA
+
+
 def calc_distance(nbClients, nbFacilities, positionC, positionF ):
     Distances= np.zeros((nbClients, nbFacilities))
     for i in range(nbClients) :

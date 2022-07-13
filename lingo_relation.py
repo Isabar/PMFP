@@ -50,7 +50,7 @@ def create_lingo_ltf_file(directory, instance_number,model, relaxed,cap,typeProb
    """
 
    lin_model.writelines(f'set terseo 1\n')
-  # lin_model.writelines(f'set timlim 120\n')
+   lin_model.writelines(f'set timlim 60\n')
    lin_model.writelines(f'go\n')
    lin_model.writelines(f'nonz volume\n')
    lin_model.writelines(f'quit\n')
@@ -110,7 +110,7 @@ def create_cap_file(directory, instance_number,model, relaxed,cap,typeProba, bud
     """
 
     lin_model.writelines(f'set terseo 1\n')
-   # lin_model.writelines(f'set timlim 120\n')
+    lin_model.writelines(f'set timlim 60\n')
     lin_model.writelines(f'go\n')
     lin_model.writelines(f'nonz volume\n')
     lin_model.writelines(f'quit\n')

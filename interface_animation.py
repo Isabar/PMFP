@@ -76,16 +76,16 @@ def display_congestion(Do,P,C,NS):
         print(Ratio)
         if NS[k,0]==1:
             print("create l1")
-            canvas.create_oval((((W*P[k,0])/10)+10*Ratio[0],((H*P[k,1])/10)+10*Ratio[0]),(((W*P[k,0])/10)-10*Ratio[0],((H*P[k,1])/10)-10*Ratio[0]), width=Ratio[0], fill="green")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="green")
         elif NS[k,1]==1:
             print("create l2")
-            canvas.create_oval((((W*P[k,0])/10)+10*Ratio[0],((H*P[k,1])/10)+10*Ratio[0]),(((W*P[k,0])/10)-10*Ratio[0],((H*P[k,1])/10)-10*Ratio[0]), width=Ratio[0], fill="blue")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="blue")
         elif NS[k,2]==1:
             print("create l3")
-            canvas.create_oval((((W*P[k,0])/10)+10*Ratio[0],((H*P[k,1])/10)+10*Ratio[0]),(((W*P[k,0])/10)-10*Ratio[0],((H*P[k,1])/10)-10*Ratio[0]), width=Ratio[0], fill="purple")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="purple")
         elif NS[k,3]==1:
             print("create l4")
-            canvas.create_oval((((W*P[k,0])/10)+10*Ratio[0],((H*P[k,1])/10)+10*Ratio[0]),(((W*P[k,0])/10)-10*Ratio[0],((H*P[k,1])/10)-10*Ratio[0]), width=Ratio[0], fill="red")
+            canvas.create_oval((((W*P[k,0])/10)+20*Ratio[0],((H*P[k,1])/10)+20*Ratio[0]),(((W*P[k,0])/10)-20*Ratio[0],((H*P[k,1])/10)-20*Ratio[0]), width=Ratio[0], fill="red")
  
 
 def display_capacity(Do,P,Cmin, C, NS ):
@@ -138,7 +138,7 @@ def get_data(fichier):
 
 def get_sol( nbFacilities,fichierSol):
     # données solutions   
-    Solutions=pd.read_excel(fichierSol,sheet_name="Sheet1", index_col=0)
+    Solutions=pd.read_excel(fichierSol,sheet_name="Feuil1", index_col=0)
     S=Solutions.to_numpy()
     NS=np.zeros((int(nbFacilities), 4))
     S2=S[1:,0]
@@ -173,7 +173,8 @@ def display_results(filename, fichierSol):
     canvas.pack()
     fenetre.mainloop()
     
-filename='C:/Users/baret/Documents/Simulateur/Test-capacité/120-12/Instances/Instance8.xlsx'
-fileSol='C:/Users/baret/Documents/Simulateur/Test-capacité/120-12/Resultats/instance_8_C_False.xlsx'
+filename='C:/Users/baret/Documents/Simulateur/Test-capacité/120-24/Instances/Instance8.xlsx'
+fileSol='C:/Users/baret/Documents/Simulateur/test-bi-obj/12-120/Resultats/instance_8_C_False-H1H2.xlsx'
 
-display_results(filename, fileSol)
+#display_results(filename, fileSol)
+display_instance(filename)

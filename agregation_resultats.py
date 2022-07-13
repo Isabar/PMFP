@@ -379,9 +379,9 @@ def calcul_distance(nb, position):
     return dist
 
     
-directory1='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/NR/Budget/Budget-0,2'     
-directory2='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/NR/Budget/Budget-0,7'     
+directory1='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,1/Instances-0,3'     
+directory2='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,1/NR/TL 60'     
 model='C'  
-RT=aggr_result(directory1, 24,model)
-#compare_capacity(directory1,directory2 ,30)
+RT=aggr_result(directory1, 30,model)
+compare_capacity(directory1,directory2 ,30)
 #compare_relaxed(directory1, directory2, 30)

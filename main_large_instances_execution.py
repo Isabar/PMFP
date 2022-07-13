@@ -74,15 +74,27 @@ def resolution_bi_obj(instance_debut,instance_fin, directory, model,relaxed,cap,
 
     return 
 
-   
+
+def modif_proba(instance_debut, instance_fin, directory,probaInit):
+    instances = [(i) for i in range(instance_debut,instance_fin)]
+
+    for instance in instances:
+        filename=directory+'/Instance'+str(instance)+'.xlsx'
+        print(filename)
+        write_proba(120, 12, 4, 0.3, filename)
+
 instance_size=30
+directory='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-12-120-0,1/Instances-0,3'
 #crea_instance(instance_size, 50, 120, 10, 20, 10, 5, 24, 4, 10, 0.3)
+#ô(9,15,directory, 0.3)
+
+
 print('test')
 relaxed =False
 model='C' # C ou CMS ou CML 
 cap=4
-directory='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/NR/Budget/Budget-0,2'
-resolution_cap(19,30,directory,model,False, cap,'Linear',0.2)
+#directory='C:/Users/baret/Documents/Simulateur/Instances-finales/Instances-24-120-0,3/NR/Budget/Budget-0,4'
+resolution_cap(28,30,directory,model,False, cap,'Linear',1)
 #resolution(instance_size,model,True, cap,'Linear')
 model2='Normal'
 #resolution(0,30, model2, False,cap,'Linear')
