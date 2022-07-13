@@ -1,0 +1,49 @@
+Sub Runallmacro()
+    Dim Filename, Pathname As String
+    Dim wb As Workbook
+    Pathname = ActiveWorkbook.Path & "\"
+    Filename = Dir(Pathname & "*.xlsx")
+    Do While Filename <> ""
+        Set wb = Workbooks.Open(Pathname & Filename)
+        Call Name(wb)
+        With wb
+            .Worksheets(1).Range("A1").Value = "Bonjour!"
+        End With
+        wb.Close SaveChanges:=True
+        Filename = Dir()
+    Loop
+End Sub
+
+Sub Name(wb As Workbook)
+With wb
+    Sheets("Donnees").Activate
+    Range("B2").Name = "NbClients"
+    Range("B3").Name = "NbFacilities"
+    Range("B3").Name = "Budget"
+    Range("B4").Name = "Nblevels"
+    
+    Sheets("Demandes").Activate
+    Range("B2", Range("B2").End(xlDown)).Name = "Demandes"
+    
+    Sheets("Penalites").Activate
+    Range("B2", Range("B2").End(xlDown)).Name = "Penalites"
+    
+    Sheets("Distances").Activate
+    Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Distances"
+    
+    
+    Sheets("Cout").Activate
+    Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Cost"
+    
+    Sheets("Proba").Activate
+    Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Proba"
+    
+    Sheets("Tri").Activate
+    Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Tri"
+    
+    Sheets("Positions").Activate
+    Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Positions"
+End With
+
+End Sub
+

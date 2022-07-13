@@ -1,0 +1,53 @@
+Sub Norm()
+
+Sheets("Distances").Activate
+Dim Tableau As Range
+Dim maxi As Single
+Dim newVal As Single
+
+Dim x As Integer
+Dim y As Integer
+
+NumRows = Sheets("Distances").Range("B2", Sheets("Distances").Range("B2").End(xlDown)).Rows.Count
+NumCols = Sheets("Distances").Range("B2", Sheets("Distances").Range("B2").End(xlToRight)).Columns.Count
+
+
+For x = 1 To NumRows
+    Set Tableau = Sheets("Distances").Rows(x + 1)
+    maxi = Application.WorksheetFunction.Max(Tableau)
+    Sheets("Distances").Cells(1, 1).Value = NumCols
+    For y = 1 To NumCols
+        newVal = (Sheets("Distances").Cells(x + 1, y + 1).Value / maxi) * 10
+        Sheets("Distances").Cells(x + 1, y + 1).Value = newVal
+    Next
+    Sheets("Distances").Cells(x + 1, 15).Value = maxi
+Next
+
+Sheets("Donnees").Activate
+Range("B2").Name = "NbClients"
+Range("B3").Name = "NbFacilities"
+Range("B3").Name = "Budget"
+Range("B4").Name = "Nblevels"
+
+Sheets("Clients").Activate
+Range("B2", Range("B2").End(xlDown)).Name = "Demandes"
+Range("C2", Range("C2").End(xlDown)).Name = "Penalites"
+
+Sheets("Distances").Activate
+Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Distances"
+
+
+Sheets("Proba").Activate
+Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Cout"
+Range("I2", Range("B2").End(xlDown).End(xlToRight)).Name = "ProbaL"
+
+Sheets("Tri").Activate
+Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Tri"
+
+Sheets("Positions").Activate
+Range("B2", Range("B2").End(xlDown).End(xlToRight)).Name = "Positions"
+
+Sheets("Capacites").Activate
+Range("B2", Range("B2").End(xlDown)).Name = "Capacites"
+
+End Sub
